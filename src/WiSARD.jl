@@ -2,6 +2,9 @@ module WiSARD
     import LinearAlgebra
     import Random
 
+    export WNN
+    export train
+    export classify
 
     """
     WNN - Weightless Neural Network
