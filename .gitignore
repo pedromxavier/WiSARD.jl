@@ -25,3 +25,6 @@ Manifest.toml
 
 # Data files
 *.csv
+
+# Jupyter Checkpoints
+.ipynb_checkpoints
