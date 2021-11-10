@@ -159,7 +159,7 @@ module WiSARD
         end
     end
 
-    function Base.show(io::IO, wnn:WNN)
+    function Base.show(io::IO, wnn::WNN)
         T = typeof(wnn).parameters[1]
 
         if T === BigInt
