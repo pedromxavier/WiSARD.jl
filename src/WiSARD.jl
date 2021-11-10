@@ -147,9 +147,3 @@ module WiSARD
         end
     end
 end
-
-wnn = WiSARD.WNN(2, 4);
-x = "x";
-y = [true, true, true, true, true, false, false, true];
-WiSARD.train(wnn, x, y);
-WiSARD.classify(wnn, y);
