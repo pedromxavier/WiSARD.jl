@@ -158,4 +158,22 @@ module WiSARD
             return s
         end
     end
+
+    function Base.show(io::IO, wnn:WNN)
+        T = typeof(wnn).parameters[1]
+
+        if T === BigInt
+            b = "∞"
+        elseif T === UInt32
+            b = "32"
+        elseif T === UInt64
+            b = "64"
+        elseif T === UInt128
+            b = "128"
+        else
+            b = "?"
+        end
+        
+        print(io, "WNN[$b bits, $(wnn.d) × $(wnn.n)]")
+    end
 end
