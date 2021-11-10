@@ -1,13 +1,14 @@
 module WiSARD
     import LinearAlgebra
     import Random
+
+
     """
     WNN - Weightless Neural Network
 
     n::Int64 Number of RAM units
     d::Int64 RAM dimension (addressing bits)
     """
-
     struct WNN{T <: Core.Integer}
         d::Int64
         n::Int64
@@ -17,7 +18,7 @@ module WiSARD
     end
 
     """
-"""
+    """
     function WNN(d::Int, n::Int)
 
         if n <= 0 || d <= 0
@@ -59,6 +60,8 @@ module WiSARD
         end
     end
 
+    """
+    """
     function train(wnn::WNN, x::String, y::Vector{Bool})
 
         if length(y) != wnn.d * wnn.n
@@ -82,6 +85,8 @@ module WiSARD
         end;
     end
 
+    """
+    """
     function train(wnn::WNN, X::Vector{String}, Y::Vector{Vector{Bool}})
         if length(X) != length(Y)
             error("Length mismatch between labels and samples")
@@ -92,6 +97,8 @@ module WiSARD
         end
     end
 
+    """
+    """
     function classify(wnn::WNN, y::Vector{Bool}; bleach=0::Int64, gamma=0.5::Float64)
         if length(y) != wnn.d * wnn.n
             error("Input dimension mismatch")
@@ -130,6 +137,8 @@ module WiSARD
         end
     end
 
+    """
+    """
     function rate(wnn::WNN, x::String, y::Vector{Bool}; bleach=0::Int64)::Float64
         if !haskey(wnn.cls, x)
             return 0.0
