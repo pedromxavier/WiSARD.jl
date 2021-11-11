@@ -68,7 +68,7 @@ function train(wnn::WNN, x::String, y::Vector{Bool})
 
     for (i, j) in enumerate(range(1, length=wnn.n, step=wnn.d))
         k = LinearAlgebra.dot(wnn.pow, @view z[j:j + wnn.d - 1])
-        c[i][k] = get(0, c[i], k) + 1
+        c[i][k] = get(c[i], k, 0) + 1
     end;
 end
 
@@ -144,7 +144,7 @@ function rate(wnn::WNN, x::String, y::Vector{Bool}; bleach=0::Int64)::Float64
         s = 0.0
         for (i, j) in enumerate(range(1, length=wnn.n, step=wnn.d))
             k = LinearAlgebra.dot(wnn.pow, z[j:j + wnn.d - 1])
-            t = get(nothing, c[i], k)
+            t = get(c[i], k, nothing)
             s += Float64(t !== nothing && t > bleach)
         end
         return s
