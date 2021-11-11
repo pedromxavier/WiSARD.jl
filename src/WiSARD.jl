@@ -67,7 +67,7 @@ function train(wnn::WNN, x::String, y::Vector{Bool})
     z = y[wnn.map]
 
     for (i, j) in enumerate(range(1, length=wnn.n, step=wnn.d))
-        k = dot(wnn.pow, @view z[j:j + wnn.d - 1])
+        k = LinearAlgebra.dot(wnn.pow, @view z[j:j + wnn.d - 1])
         c[i][k] = get(0, c[i], k) + 1
     end;
 end
