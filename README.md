@@ -1,2 +1,2 @@
 # WiSARD.jl
-WiSARD in Julia
+WiSARD Weightless Neural Network (WNN) Model implemented in Julia Language.
