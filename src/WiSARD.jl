@@ -85,11 +85,11 @@ function train(wnn::WNN, X::Vector{String}, Y::Vector{Vector{Bool}})
 end
 
 """
-    classify(wnn::WNN, y::Vector{Bool}; bleach=0::Int64, gamma=0.5::Float64)
+    classify(wnn::WNN, y::Vector{Bool}; bleach=0::Int, gamma=0.5::Float)
 
 Classifies input `y` returning some label `x`. If no training happened, `nothing` will be returned instead.
 """
-function classify(wnn::WNN, y::Vector{Bool}; bleach=0::Int64, gamma=0.5::Float64)
+function classify(wnn::WNN, y::Vector{Bool}; bleach=0::Int, gamma=0.5::Float)
     if length(y) != wnn.d * wnn.n
         error("Input dimension mismatch")
     end
@@ -129,13 +129,13 @@ end
 
 """
 """
-function classify(wnn::WNN, Y::Vector{Vector{Bool}}; bleach=0::Int64, gamma=0.5::Float64)
+function classify(wnn::WNN, Y::Vector{Vector{Bool}}; bleach=0::Int, gamma=0.5::Float)
     return [classify(wnn, y, bleach=bleach, gamma=gamma) for y in Y]
 end
 
 """
 """
-function rate(wnn::WNN, x::String, y::Vector{Bool}; bleach=0::Int64)::Float64
+function rate(wnn::WNN, x::String, y::Vector{Bool}; bleach=0::Int)
     if !haskey(wnn.cls, x)
         return 0.0
     else
