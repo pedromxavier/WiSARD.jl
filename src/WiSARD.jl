@@ -1,98 +1,90 @@
 module WiSARD
 
-import LinearAlgebra
 import Random
 
-export WNN, train, classify
+export WNN, train!, classify
+export thermometer
 
-"""
-WNN - Weightless Neural Network
+@doc raw"""
+    WNN{S, T}(d::Int, n::Int; seed::Union{Int, Nothing}=nothing) where {S <: Any, T <: Union{Unsigned, BigInt}}
+    WNN{T}(d::Int, n::Int; seed::Union{Int, Nothing}=nothing) where {T <: Union{Unsigned, BigInt}}
 
-n::Int64 Number of RAM units
-d::Int64 RAM dimension (addressing bits)
+## References:
+ * [1] Carvalho, Danilo & Carneiro, Hugo & França, Felipe & Lima, Priscila. (2013). B-bleaching : Agile Overtraining Avoidance in the WiSARD Weightless Neural Classifier. 
 """
-struct WNN{T <: Union{Unsigned, BigInt}}
+struct WNN{S <: Any, T <: Union{Unsigned, BigInt}}
     d::Int
     n::Int
-    cls::Dict{String,Vector{Dict{T, Int}}}
-    map::Array{Int}
-    pow::Array{T}
-end
+    y::Vector{Bool}
+    cls::Dict{S, Vector{Dict{T, Int}}}
+    map::Vector{Int}
 
-function WNN{T}(d::Int, n::Int; seed=0::Int) where T <: Union{Unsigned, BigInt}
-    if n <= 0 || d <= 0
-        error("Values for 'd' or 'n' must be positive")
-    end
+    function WNN{S, T}(d::Int, n::Int; seed::Union{Int, Nothing}=nothing) where {S <: Any, T <: Union{Unsigned, BigInt}}
+        if n <= 0 || d <= 0
+            error("Values for 'd' or 'n' must be positive")
+        end
+    
+        if T !== BigInt && d > (T.size * 8)
+            error("'$T' is insufficient to guarantee 'd' addressing bits")
+        end
 
-    if T !== BigInt && d > (T.size * 8)
-        error("'$T' is insufficient to guarantee 'd' addressing bits")
-    end
-
-    rng = Random.MersenneTwister(seed)
-
-    return WNN{T}(
-        d, n,
-        Dict{String,Vector{Dict{T, Int}}}(),
-        Random.shuffle(rng, 1:n * d),
-        2 .^ Vector{T}([0:d - 1...])
+        if seed === nothing
+            seed = trunc(Int, time())
+        end
+    
+        rng = Random.MersenneTwister(seed)
+    
+        return new{S, T}(
+            d,
+            n,
+            Vector{Bool}(undef, n * d),
+            Dict{S, Vector{Dict{T, Int}}}(),
+            Random.shuffle(rng, 1:n * d)
         )
-end
-
-function Base.show(io::IO, wnn::WNN{T}) where T <: Union{Unsigned, BigInt}
-    if T === BigInt
-        b = "∞"
-    else
-        b = "$(T.size * 8)"
     end
 
-    print(io, "WNN[$b bits, $(wnn.d) × $(wnn.n)]")
+    function WNN{T}(d::Int, n::Int; seed::Union{Int, Nothing}=nothing) where {T <: Union{Unsigned, BigInt}}
+        return WNN{Symbol, T}(d, n; seed=seed)
+    end
+
 end
 
-"""
-    train(wnn::WNN, x::String, y::Vector{Bool})
+Base.show(io::IO, wnn::WNN{T}) where T <: BigInt = print(io, "WNN[∞ bits, $(wnn.d) × $(wnn.n)]")
+Base.show(io::IO, wnn::WNN{T}) where T <: Unsigned = print(io, "WNN[$(T.size * 8) bits, $(wnn.d) × $(wnn.n)]")
+
+@doc raw"""
+    train!(wnn::WNN{S, T}, x::S, y::Vector{Bool}) where {S, T}
 
 Train model with a single pair (class `x`, sample `y`)
 """
-function train(wnn::WNN, x::String, y::Vector{Bool})
-
-    if length(y) != wnn.d * wnn.n
-        error("Input dimension mismatch")
-    end
+function train!(wnn::WNN{S, T}, x::S, y::Vector{Bool}) where {S, T}
 
     if !haskey(wnn.cls, x)
-        wnn.cls[x] = [Dict() for i = 1:wnn.n]
+        wnn.cls[x] = Vector{Dict{T, Int}}([Dict{T, Int}() for i = 1:wnn.n])
     end
 
     c = wnn.cls[x]
-    z = y[wnn.map]
 
-    for (i, j) in enumerate(range(1, length=wnn.n, step=wnn.d))
-        k = LinearAlgebra.dot(wnn.pow, @view z[j:j + wnn.d - 1])
+    wnn.y[:] = y[wnn.map]
+
+    for i = 1:wnn.n
+        k = 0
+        l = (i - 1) * wnn.m
+        for j = 1:wnn.m
+            k += wnn.y[l + j] << (j - 1)
+        end
         c[i][k] = get(c[i], k, 0) + 1
-    end;
-end
-
-"""
-"""
-function train(wnn::WNN, X::Vector{String}, Y::Vector{Vector{Bool}})
-    if length(X) != length(Y)
-        error("Length mismatch between labels and samples")
     end
 
-    for (x, y) in zip(X, Y)
-        train(wnn, x, y)
-    end
+    nothing
 end
 
-"""
+@doc raw"""
     classify(wnn::WNN, y::Vector{Bool}; bleach=0::Int, gamma=0.5::Float)
 
 Classifies input `y` returning some label `x`. If no training happened, `nothing` will be returned instead.
 """
 function classify(wnn::WNN, y::Vector{Bool}; bleach=0::Int, gamma=0.5::Float)
-    if length(y) != wnn.d * wnn.n
-        error("Input dimension mismatch")
-    end
 
     r₁ = r₂ = 0
     x₁ = x₂ = nothing
@@ -110,7 +102,7 @@ function classify(wnn::WNN, y::Vector{Bool}; bleach=0::Int, gamma=0.5::Float)
     if bleach == 0
         return x₁
     else
-        γ = (r₁ - r₂) / (r₁)
+        γ = (r₁ - r₂) / r₁
 
         if γ >= gamma
             return x₁
@@ -129,26 +121,29 @@ end
 
 """
 """
-function classify(wnn::WNN, Y::Vector{Vector{Bool}}; bleach=0::Int, gamma=0.5::Float)
-    return [classify(wnn, y, bleach=bleach, gamma=gamma) for y in Y]
-end
-
-"""
-"""
-function rate(wnn::WNN, x::String, y::Vector{Bool}; bleach=0::Int)
+function rate(wnn::WNN{S, T}, x::S, y::Vector{Bool}; bleach=0::Int) where {S, T}
     if !haskey(wnn.cls, x)
         return 0.0
     else
         c = wnn.cls[x]
-        z = y[wnn.map]
+
+        wnn.y[:] = y[wnn.map]
+
         s = 0.0
-        for (i, j) in enumerate(range(1, length=wnn.n, step=wnn.d))
-            k = LinearAlgebra.dot(wnn.pow, z[j:j + wnn.d - 1])
-            t = get(c[i], k, nothing)
-            s += Float64(t !== nothing && t > bleach)
+        
+        for i = 1:wnn.n
+            k = 0
+            l = (i - 1) * wnn.m
+            for j = 1:wnn.m
+                k += wnn.y[l + j] << (j - 1)
+            end
+            s += get(c[i], k, 0.0) > bleach ? 1.0 : 0.0
         end
+
         return s
     end
 end
 
-end
+include("encoding/encoding.jl")
+
+end # module
