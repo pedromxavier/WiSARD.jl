@@ -49,8 +49,8 @@ struct WNN{S <: Any, T <: Union{Unsigned, BigInt}}
 
 end
 
-Base.show(io::IO, wnn::WNN{T}) where T <: BigInt = print(io, "WNN[∞ bits, $(wnn.d) × $(wnn.n)]")
-Base.show(io::IO, wnn::WNN{T}) where T <: Unsigned = print(io, "WNN[$(T.size * 8) bits, $(wnn.d) × $(wnn.n)]")
+Base.show(io::IO, wnn::WNN{S, T}) where {S <: Any, T <: BigInt}  = print(io, "WNN[∞ bits, $(wnn.d) × $(wnn.n)]")
+Base.show(io::IO, wnn::WNN{S, T}) where {S <: Any, T <: Unsigned} = print(io, "WNN[$(T.size * 8) bits, $(wnn.d) × $(wnn.n)]")
 
 @doc raw"""
     train!(wnn::WNN{S, T}, x::S, y::Vector{Bool}) where {S, T}
@@ -68,11 +68,7 @@ function train!(wnn::WNN{S, T}, x::S, y::Vector{Bool}) where {S, T}
     wnn.y[:] = y[wnn.map]
 
     for i = 1:wnn.n
-        k = 0
-        l = (i - 1) * wnn.m
-        for j = 1:wnn.m
-            k += wnn.y[l + j] << (j - 1)
-        end
+        k = sum(wnn.y[(i - 1) * wnn.d + j] << (j - 1) for j = 1:wnn.d)
         c[i][k] = get(c[i], k, 0) + 1
     end
 
@@ -84,7 +80,7 @@ end
 
 Classifies input `y` returning some label `x`. If no training happened, `nothing` will be returned instead.
 """
-function classify(wnn::WNN, y::Vector{Bool}; bleach=0::Int, gamma=0.5::Float)
+function classify(wnn::WNN, y::Vector{Bool}; bleach=0::Int, gamma=0.5::Float64)
 
     r₁ = r₂ = 0
     x₁ = x₂ = nothing
@@ -128,19 +124,8 @@ function rate(wnn::WNN{S, T}, x::S, y::Vector{Bool}; bleach=0::Int) where {S, T}
         c = wnn.cls[x]
 
         wnn.y[:] = y[wnn.map]
-
-        s = 0.0
         
-        for i = 1:wnn.n
-            k = 0
-            l = (i - 1) * wnn.m
-            for j = 1:wnn.m
-                k += wnn.y[l + j] << (j - 1)
-            end
-            s += get(c[i], k, 0.0) > bleach ? 1.0 : 0.0
-        end
-
-        return s
+        return sum((get(c[i], sum(wnn.y[(i - 1) * wnn.d + j] << (j - 1) for j = 1:wnn.d), 0.0) > bleach ? 1.0 : 0.0) for i = 1:wnn.n)
     end
 end
 
