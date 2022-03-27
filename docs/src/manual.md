@@ -1,5 +1,7 @@
-
+# Manual
 
 ```@docs
-WNN
+WiSARD.WNN
+WiSARD.train!
+WiSARD.classify
 ```

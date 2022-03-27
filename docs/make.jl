@@ -1,4 +1,6 @@
 using Documenter
+using Pkg
+Pkg.develop(path=joinpath(@__DIR__, ".."))
 using WiSARD
 
 
@@ -23,10 +25,10 @@ makedocs(;
         "manual.md",
         "examples.md",
     ],
-    workdir="../examples"
+    workdir="."
 )
 
 deploydocs(
-        repo=raw"https://github.com/pedromxavier/WiSARD.jl.git",
-        push_preview = true
-    )
+    repo=raw"https://github.com/pedromxavier/WiSARD.jl.git",
+    push_preview = true
+)
