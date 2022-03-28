@@ -7,6 +7,7 @@
 pkg> add https://github.com/pedromxavier/WiSARD.jl
 ```
 
+### Later:
 ```julia
 pkg> add WiSARD
 ```

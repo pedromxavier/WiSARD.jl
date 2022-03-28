@@ -19,7 +19,7 @@ makedocs(;
         sidebar_sitename=false,
     ), 
     sitename="WiSARD.jl",
-    authors="Pedro Xavier, Tiago Andrade, and Joaquim Garcia",
+    authors="Pedro Maciel Xavier",
     pages=[
         "Home" => "index.md",
         "manual.md",
@@ -32,3 +32,5 @@ deploydocs(
     repo=raw"https://github.com/pedromxavier/WiSARD.jl.git",
     push_preview = true
 )
+
+Pkg.rm("WiSARD")

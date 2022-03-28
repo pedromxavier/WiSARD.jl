@@ -3,7 +3,7 @@
 ## MNIST
 ```@setup mnist
 using Pkg
-Pkg.develop(path=joinpath(@__DIT__, ".."))
+Pkg.develop(path=joinpath(@__DIR__, ".."))
 ```
 
 ```@example mnist
