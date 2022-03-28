@@ -1,3 +1,7 @@
+@doc raw"""
+    thermometer(x::Float64, n::Int)
+    thermometer(x::Vector{Float64}, n::Int)
+"""
 function thermometer(x::Float64, n::Int)
     y = zeros(Bool, n)
     k = trunc(Int, clamp(x, 0.0, 1.0) * n)
