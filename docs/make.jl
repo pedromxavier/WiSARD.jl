@@ -1,8 +1,6 @@
 using Documenter
 using Pkg
-Pkg.add("WiSARD")
 using WiSARD
-
 
 # Set up to run docstrings with jldoctest
 DocMeta.setdocmeta!(
@@ -14,7 +12,7 @@ makedocs(;
     doctest=true,
     clean=true,
     format=Documenter.HTML(
-        assets = ["assets/extra_styles.css", "assets/favicon.ico"],
+        assets = ["assets/extra_styles.css"],
         mathengine=Documenter.MathJax2(),
         sidebar_sitename=false,
     ), 
@@ -29,6 +27,6 @@ makedocs(;
 )
 
 deploydocs(
-    repo=raw"https://github.com/pedromxavier/WiSARD.jl.git",
+    repo=raw"github.com/pedromxavier/WiSARD.jl.git",
     push_preview = true
 )

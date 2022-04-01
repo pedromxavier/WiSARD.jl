@@ -1,4 +1,5 @@
 # Manual
+WiSARD's interface is very simple.
 
 ```@docs
 WiSARD.WNN
