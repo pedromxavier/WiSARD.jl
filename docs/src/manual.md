@@ -9,5 +9,6 @@ WiSARD.classify
 
 ## Encoding
 ```@docs
+WiSARD.onehot
 WiSARD.thermometer
 ```

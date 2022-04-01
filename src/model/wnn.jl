@@ -51,9 +51,8 @@ Base.show(io::IO, wnn::WNN{S, T}) where {S <: Any, T <: Unsigned} = print(io, "W
 Train model with a single pair (class `x`, sample `y`)
 """
 function train!(wnn::WNN{S, T}, x::S, y::Vector{Bool}) where {S, T}
-
     if !haskey(wnn.cls, x)
-        wnn.cls[x] = Vector{Dict{T, Int}}([Dict{T, Int}() for i = 1:wnn.n])
+        wnn.cls[x] = Dict{T, Int}[Dict{T, Int}() for i = 1:wnn.n]
     end
 
     for i = 1:wnn.n
