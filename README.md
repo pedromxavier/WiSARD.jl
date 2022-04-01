@@ -11,9 +11,9 @@
     <a href="https://github.com/pedromxavier/WiSARD.jl/actions/workflows/ci.yml">
         <img src="https://github.com/pedromxavier/WiSARD.jl/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" />
     </a>
-    <!-- <a href="https://zenodo.org/badge/latestdoi/430697061">
-        <img src="https://zenodo.org/badge/430697061.svg" alt="DOI">
-    </a> -->
+    <a href="https://zenodo.org/badge/latestdoi/425513329">
+        <img src="https://zenodo.org/badge/425513329.svg" alt="DOI">
+    </a>
 </div>
 
 ## Introduction
