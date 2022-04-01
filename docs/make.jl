@@ -1,5 +1,4 @@
 using Documenter
-using Pkg
 using WiSARD
 
 # Set up to run docstrings with jldoctest
@@ -22,6 +21,7 @@ makedocs(;
         "Home" => "index.md",
         "manual.md",
         "examples.md",
+        "booklet.md",
     ],
     workdir="."
 )
