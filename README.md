@@ -5,7 +5,7 @@
         <img src="/docs/src/assets/logo.svg" width=400px alt="WiSARD.jl" />
     </a>
     <br>
-    <a href="https://pedromxavier.github.com/WiSARD.jl/dev">
+    <a href="https://pedromxavier.github.io/WiSARD.jl/dev">
         <img src="https://img.shields.io/badge/docs-dev-blue.svg" alt="Docs">
     </a>
     <a href="https://github.com/pedromxavier/WiSARD.jl/actions/workflows/ci.yml">
