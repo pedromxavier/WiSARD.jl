@@ -23,7 +23,7 @@ WiSARD.jl is a Julia Package that implements a Weightless Neural Network (WNN) M
 
 ### Installation
 ```julia
-julia> ]add WiSARD
+pkg> add WiSARD
 ```
 
 ```julia

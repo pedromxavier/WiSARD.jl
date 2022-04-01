@@ -7,7 +7,7 @@
 
     .red{
       	fill: #cb3c33;
-		stroke-width: 3px;
+		stroke-width: 5px;
     }
 
     .green{
@@ -17,8 +17,14 @@
 
     .blue{
       	fill: #4063d8;
-		stroke-width: 3px;
+		stroke-width: 5px;
     }
+
+	.blueline{
+		fill: none;
+		stroke: #4063d8;
+		stroke-width: 5px;
+	}
 
     .violet{
       	fill: #9558b2;
@@ -33,18 +39,69 @@
   	}
   	</style>
 
+	<defs>
+		<marker id='arrowhead' orient="auto" markerWidth='10' markerHeight='10' refX='0.1' refY='2'>
+			<path d='M0,0 V4 L2,2 Z' fill="#4063d8" />
+		</marker>
+	</defs>
 
 	<!-- FRAME -->
 	<rect x="0" y="0" width="1000" height="1000" stroke="black" fill="none" />
 
-	<path class="sketch" d="M 100 100
-	S 400 120 700 150
-	S 750 230 650 510
-	S 200 150 550 300
-	S 150 400 250 500
-	S  90 650 150 700
-	S 800 600 900 700" />
+	<g transform="translate(150, 100)">
+		<rect class="sketch" x="0" y="0" width="250" height="160" />
+		<circle class="red" cx="208" cy="76" r="20" />
+		<circle class="red" cx="135" cy="44" r="20" />
+		<circle class="red" cx="134" cy="103" r="20" />
+		<circle class="red" cx="63" cy="97" r="20" />
+		<circle class="red" cx="49" cy="39" r="20" />
+		<circle class="red" cx="195" cy="129" r="20" />
+	</g>
+	<g transform="translate(150, 300)">
+		<rect class="sketch" x="0" y="0" width="250" height="160" />
+		<circle class="green" cx="148" cy="40" r="20" />
+		<circle class="green" cx="215" cy="69" r="20" />
+		<circle class="green" cx="115" cy="84" r="20" />
+		<circle class="green" cx="35" cy="123" r="20" />
+		<circle class="green" cx="210" cy="125" r="20" />
+		<circle class="green" cx="34" cy="58" r="20" />
+		<circle class="green" cx="168" cy="89" r="20" />
+		<circle class="green" cx="97" cy="33" r="20" />
+	</g>
+	<g transform="translate(150, 500)">
+		<rect class="sketch" x="0" y="0" width="250" height="160" />
+		<circle class="violet" cx="206" cy="52" r="20" />
+		<circle class="violet" cx="162" cy="90" r="20" />
+		<circle class="violet" cx="106" cy="50" r="20" />
+		<circle class="violet" cx="32" cy="88" r="20" />
+		<circle class="violet" cx="218" cy="118" r="20" />
+		<circle class="violet" cx="43" cy="39" r="20" />
+		<circle class="violet" cx="76" cy="119" r="20" />
+	</g>
 
+	<circle class="sketch" cx="600" cy="380" r="80" />
+
+	<path marker-end='url(#arrowhead)' class="blueline" d="M 420 175 L 600 175 L 600 280" />
+
+	<path marker-end='url(#arrowhead)' class="blueline" d="M 420 380 L 500 380 " />
+
+	<path marker-end='url(#arrowhead)' class="blueline" d="M 420 575 L 600 575 L 600 480" />
+
+	<path marker-end='url(#arrowhead)' class="blueline" d="M 695 380 L 810 380 " />
+
+	<circle cx="850" cy="380" r="20" >
+	<animate 
+       attributeName="class"
+       attributeType="XML"
+       values="red;green;violet;red"
+       keyTimes= "0;0.33;0.66;1"
+       dur="6s"
+       repeatCount="indefinite"/>
+	</circle>
+
+	<g transform="translate(565, 345) scale(0.1, 0.1)">
+		<path class="blue" d="M666 247Q664 244 652 126T638 4V0H351Q131 0 95 0T57 5V6Q54 12 57 17L73 36Q89 54 121 90T182 159L305 299L56 644L55 658Q55 677 60 681Q63 683 351 683H638V679Q640 674 652 564T666 447V443H626V447Q618 505 604 543T559 605Q529 626 478 631T333 637H294H189L293 494Q314 465 345 422Q400 346 400 340Q400 338 399 337L154 57Q407 57 428 58Q476 60 508 68T551 83T575 103Q595 125 608 162T624 225L626 251H666V247Z" />
+	</g>
 	<g transform="scale(1.8) translate(-220, -220)">
 		<g transform="translate(238.05, 650)">
 			<svg width="523.9" height="96.503" viewBox="0 0 523.9 96.503" xmlns="http://www.w3.org/2000/svg">
@@ -54,18 +111,4 @@
 			</svg>
 		</g>
 	</g>
-
-	<circle class="red" cx="140" cy="140" r="20" />
-	<circle class="red" cx="785" cy="210" r="20" />
-	<circle class="red" cx="575" cy="540" r="20" />
-
-	<circle class="violet" cx="450" cy="315" r="20" />
-	<circle class="violet" cx="600" cy="363" r="20" />
-	<circle class="violet" cx="440" cy="390" r="20" />
-
-	<circle class="green" cx="282" cy="487" r="20" />
-	<circle class="green" cx="890" cy="650" r="20" />
-	<circle class="green" cx="190" cy="677" r="20" />
-
-
 </svg>

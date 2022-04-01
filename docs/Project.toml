@@ -1,8 +1,9 @@
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+WiSARD = "2b71b7a6-5a26-4a05-9b8d-679d5aa759d4"
 
 [compat]
 DataFrames = "1.3"
 Documenter = "0.27"
+WiSARD = "0.1"
