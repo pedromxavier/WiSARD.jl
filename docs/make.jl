@@ -1,6 +1,6 @@
 using Documenter
 using Pkg
-Pkg.develop(path=joinpath(@__DIR__, ".."))
+Pkg.add("WiSARD")
 using WiSARD
 
 
@@ -32,5 +32,3 @@ deploydocs(
     repo=raw"https://github.com/pedromxavier/WiSARD.jl.git",
     push_preview = true
 )
-
-Pkg.rm("WiSARD")
