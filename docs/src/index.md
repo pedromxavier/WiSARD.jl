@@ -32,7 +32,7 @@ classify(wnn, [1 1 0 0]) == :x
 @software{
     author={{Pedro Maciel Xavier}},
     title={{WiSARD.jl}},
-    url = {https://github.com/psrenergy/WiSARD.jl},
+    url = {https://github.com/pedromxavier/WiSARD.jl},
     version = {0.1.0},
     date = {2022-04-01},
 }
