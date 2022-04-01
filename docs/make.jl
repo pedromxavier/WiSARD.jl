@@ -29,6 +29,6 @@ makedocs(;
 )
 
 deploydocs(
-    repo=raw"https://github.com/pedromxavier/WiSARD.jl.git",
+    repo=raw"github.com/pedromxavier/WiSARD.jl.git",
     push_preview = true
 )
