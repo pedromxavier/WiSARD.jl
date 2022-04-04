@@ -1,5 +1,0 @@
-# Booklet
-
-```@docs
-WiSARD.rate
-```

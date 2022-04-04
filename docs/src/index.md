@@ -33,7 +33,7 @@ classify(wnn, [1 1 0 0]) == :x
     author={{Pedro Maciel Xavier}},
     title={{WiSARD.jl}},
     url = {https://github.com/pedromxavier/WiSARD.jl},
-    version = {0.1.0},
+    version = {0.1.1},
     date = {2022-04-01},
 }
 ```
