@@ -16,24 +16,27 @@ julia> Pkg.add("WiSARD")
 ```
 
 ### Example
-```julia
+```@example quick-start
 using WiSARD
 
 wnn = WNN{Symbol, UInt}(2, 2)
 
-train!(wnn, :x, [1 1 0 0])
-train!(wnn, :y, [0 0 1 1])
+train!(wnn, :x, Bool[1, 1, 0, 0])
+train!(wnn, :y, Bool[0, 0, 1, 1])
 
-classify(wnn, [1 1 0 0]) == :x
+classify(wnn, Bool[1, 1, 0, 0]) == :x
 ```
 
 ### Citing WiSARD.jl
 ```tex
-@software{
-    author={{Pedro Maciel Xavier}},
-    title={{WiSARD.jl}},
-    url = {https://github.com/pedromxavier/WiSARD.jl},
-    version = {0.1.0},
-    date = {2022-04-01},
+@software{xavier:2022,
+  author       = {Pedro Maciel Xavier},
+  title        = {WiSARD.jl},
+  month        = {apr},
+  year         = {2022},
+  publisher    = {Zenodo},
+  version      = {v0.1.1},
+  doi          = {10.5281/zenodo.6407358},
+  url          = {https://doi.org/10.5281/zenodo.6407358}
 }
 ```
