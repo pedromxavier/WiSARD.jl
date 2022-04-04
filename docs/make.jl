@@ -21,7 +21,6 @@ makedocs(;
         "Home" => "index.md",
         "manual.md",
         "examples.md",
-        "booklet.md",
     ],
     workdir="."
 )
