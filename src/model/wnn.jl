@@ -91,8 +91,8 @@ function classify(wnn::WNN, y::Vector{Bool}; bleach=0::Int, gamma=0.5::Float64)
         if γ >= gamma
             return x₁
         else
-            r₁ = rate(wnn, x₁, y, bleach=bleach)
-            r₂ = rate(wnn, x₂, y, bleach=bleach)
+            r₂ = rate(wnn, x₂, y; bleach=bleach)
+            r₁ = rate(wnn, x₁, y; bleach=bleach)
 
             if r₁ > r₂
                 return x₁
@@ -103,9 +103,7 @@ function classify(wnn::WNN, y::Vector{Bool}; bleach=0::Int, gamma=0.5::Float64)
     end
 end
 
-"""
-"""
-function rate(wnn::WNN{S, T}, x::S, y::Vector{Bool}; bleach=0::Int) where {S, T}
+function rate(wnn::WNN{S, T}, x::Union{S, Nothing}, y::Vector{Bool}; bleach=0::Int) where {S, T}
     if !haskey(wnn.cls, x)
         return 0.0
     else

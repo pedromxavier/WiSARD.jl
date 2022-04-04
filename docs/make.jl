@@ -22,7 +22,7 @@ makedocs(;
         "manual.md",
         "examples.md",
     ],
-    workdir="."
+    workdir=@__DIR__
 )
 
 deploydocs(

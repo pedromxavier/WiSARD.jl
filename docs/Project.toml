@@ -1,6 +1,7 @@
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+MLDatasets = "eb30cadb-4394-5ae3-aed4-317e484a6458"
 WiSARD = "2b71b7a6-5a26-4a05-9b8d-679d5aa759d4"
 
 [compat]
