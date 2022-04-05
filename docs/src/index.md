@@ -35,7 +35,7 @@ classify(wnn, [1 1 0 0]) == :x
   month        = {apr},
   year         = {2022},
   publisher    = {Zenodo},
-  version      = {v0.1.2},
+  version      = {v0.1.3},
   doi          = {10.5281/zenodo.6407358},
   url          = {https://doi.org/10.5281/zenodo.6407358}
 }
