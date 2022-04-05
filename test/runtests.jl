@@ -9,21 +9,20 @@ function tests()
     @testset "Simple Character Learning" begin
         wnn = WNN{Symbol, UInt}(3, 4)
 
-        X = Bool[1, 0, 1,
-                 0, 1, 0,
-                 0, 1, 0,
-                 1, 0, 1,]
+        X = Bool[1 0 1
+                 0 1 0
+                 0 1 0
+                 1 0 1]
 
-        Y = Bool[1, 0, 1,
-                 0, 1, 0,
-                 0, 1, 0,
-                 0, 1, 0,]
+        Y = Bool[1 0 1
+                 0 1 0
+                 0 1 0
+                 0 1 0]
 
-        Z = Bool[1, 1, 1,
-                 0, 1, 1,
-                 1, 1, 0,
-                 1, 1, 1,]
-        
+        Z = Bool[1 1 1
+                 0 1 1
+                 1 1 0
+                 1 1 1]
 
         train!(wnn, :x, X)
         train!(wnn, :y, Y)
@@ -32,6 +31,30 @@ function tests()
         @test classify(wnn, X) == :x
         @test classify(wnn, Y) == :y
         @test classify(wnn, Z) == :z
+    end
+
+    @testset "Broadcasting" begin
+        wnn = WNN{Symbol, UInt}(3, 4)
+        
+        x = [
+            Bool[1 0 1
+                 0 1 0
+                 0 1 0
+                 1 0 1],
+            Bool[1 0 1
+                 0 1 0
+                 0 1 0
+                 0 1 0],
+            Bool[1 1 1
+                 0 1 1
+                 1 1 0
+                 1 1 1],
+        ]
+        y = [:x, :y, :z]
+
+        train!(wnn, y, x)
+
+        @test classify(wnn, x) == y
     end
 end
 
