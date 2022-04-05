@@ -2,7 +2,7 @@ module WiSARD
 
 using Random
 
-include("model/wnn.jl")
+include("model/model.jl")
 
 include("encoding/encoding.jl")
 
