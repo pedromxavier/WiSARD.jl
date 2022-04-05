@@ -19,10 +19,10 @@ function images(wnn::WNN{S, T}, y::S) where {S, T}
     return if M == 0
         Float64.(img)
     else
-        Float64.(img / M)
+        Float64.(img ./ M)
     end
 end
 
-function images(wnn::WNN)
-    return Dict{S, Array{Int}}(y => images(wnn, y) for y in keys(wnn.cls))
+function images(wnn::WNN{S, T}) where {S, T}
+    return Dict{S, Array{Float64}}(y => images(wnn, y) for y in keys(wnn.cls))
 end

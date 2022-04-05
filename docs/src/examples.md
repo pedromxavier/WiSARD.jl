@@ -34,6 +34,28 @@ s = count(classify(wnn, test_x) .== test_y)
 println("Accuracy: $(100. * s / 10_000)%")
 ```
 
+```@example mnist
+using Images
+
+images = WiSARD.images(wnn)
+
+img = images[0]
+
+RGB.([img[(i - 1) * 28 + j] for i = 1:28, j = 1:28])
+```
+
+```@example mnist
+img = images[1]
+
+RGB.([img[(i - 1) * 28 + j] for i = 1:28, j = 1:28])
+```
+
+```@example mnist
+img = images[2]
+
+RGB.([img[(i - 1) * 28 + j] for i = 1:28, j = 1:28])
+```
+
 ## Fashion MNIST
 ```@example fashion-mnist
 using WiSARD
@@ -60,4 +82,26 @@ train!(wnn, train_y, train_x)
 s = count(classify(wnn, test_x) .== test_y)
 
 println("Accuracy: $(100. * s / 10_000)%")
+```
+
+```@example fashion-mnist
+using Images
+
+images = WiSARD.images(wnn)
+
+img = images[0]
+
+RGB.([img[(i - 1) * 28 + j] for i = 1:28, j = 1:28])
+```
+
+```@example fashion-mnist
+img = images[1]
+
+RGB.([img[(i - 1) * 28 + j] for i = 1:28, j = 1:28])
+```
+
+```@example fashion-mnist
+img = images[2]
+
+RGB.([img[(i - 1) * 28 + j] for i = 1:28, j = 1:28])
 ```
