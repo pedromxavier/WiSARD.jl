@@ -123,7 +123,7 @@ function rate(wnn::WNN{S, T}, y::Union{S, Nothing}, x::AbstractArray; bleach=0::
     end
 end
 
-function train!(wnn::WNN{S, T}, y::Vector{S}, x::Vector{AbstractArray}) where {S, T}
+function train!(wnn::WNN{S, T}, y::Vector{S}, x::Vector{<:AbstractArray}) where {S, T}
     for (yᵢ, xᵢ) in zip(y, x)
         train!(wnn, yᵢ, xᵢ)
     end
@@ -131,6 +131,6 @@ function train!(wnn::WNN{S, T}, y::Vector{S}, x::Vector{AbstractArray}) where {S
     nothing
 end
 
-function classify(wnn::WNN, x::Vector{AbstractArray})
-    [classify(wnn, xᵢ) for xᵢ in x]
+function classify(wnn::WNN, x::Vector{<:AbstractArray}; bleach::Int=0, gamma::Float64=0.5)
+    [classify(wnn, xᵢ; bleach=bleach, gamma=gamma) for xᵢ in x]
 end
