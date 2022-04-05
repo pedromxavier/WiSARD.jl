@@ -21,10 +21,10 @@ using WiSARD
 
 wnn = WNN{Symbol, UInt}(2, 2)
 
-train!(wnn, :x, Bool[1, 1, 0, 0])
-train!(wnn, :y, Bool[0, 0, 1, 1])
+train!(wnn, :x, [1 1 0 0])
+train!(wnn, :y, [0 0 1 1])
 
-classify(wnn, Bool[1, 1, 0, 0]) == :x
+classify(wnn, [1 1 0 0]) == :x
 ```
 
 ### Citing WiSARD.jl

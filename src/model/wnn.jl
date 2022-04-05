@@ -15,7 +15,7 @@ struct WNN{S <: Any, T <: Union{Unsigned, BigInt}}
 
     function WNN{S, T}(d::Int, n::Int; seed::Union{Int, Nothing}=nothing) where {S <: Any, T <: Union{Unsigned, BigInt}}
         if n <= 0 || d <= 0
-            error("Values for 'd' or 'n' must be positive")
+            error("Values for 'd' and 'n' must be positive")
         end
     
         if T !== BigInt && d > (T.size * 8)
@@ -28,7 +28,7 @@ struct WNN{S <: Any, T <: Union{Unsigned, BigInt}}
     
         rng = Random.MersenneTwister(seed)
     
-        return new{S, T}(
+        new{S, T}(
             d,
             n,
             Dict{S, Vector{Dict{T, Int}}}(),
@@ -37,7 +37,7 @@ struct WNN{S <: Any, T <: Union{Unsigned, BigInt}}
     end
 
     function WNN{T}(d::Int, n::Int; seed::Union{Int, Nothing}=nothing) where {T <: Union{Unsigned, BigInt}}
-        return WNN{Symbol, T}(d, n; seed=seed)
+        WNN{Symbol, T}(d, n; seed=seed)
     end
 
 end
@@ -46,18 +46,27 @@ Base.show(io::IO, wnn::WNN{S, T}) where {S <: Any, T <: BigInt}  = print(io, "WN
 Base.show(io::IO, wnn::WNN{S, T}) where {S <: Any, T <: Unsigned} = print(io, "WNN[$(T.size * 8) bits, $(wnn.d) × $(wnn.n)]")
 
 @doc raw"""
+    address(wnn::WNN, x::AbstractArray, i::Int)
+"""
+function address(wnn::WNN, x::AbstractArray, i::Int)
+    @inbounds sum(iszero(x[wnn.map[(i - 1) * wnn.d + j]]) ? 0 : 1 << (j - 1) for j = 1:wnn.d)
+end
+
+@doc raw"""
     train!(wnn::WNN{S, T}, x::S, y::Vector{Bool}) where {S, T}
 
 Train model with a single pair (class `x`, sample `y`)
 """
-function train!(wnn::WNN{S, T}, x::S, y::Vector{Bool}) where {S, T}
-    if !haskey(wnn.cls, x)
-        wnn.cls[x] = Dict{T, Int}[Dict{T, Int}() for i = 1:wnn.n]
+function train!(wnn::WNN{S, T}, y::S, x::AbstractArray) where {S, T}
+    if !haskey(wnn.cls, y)
+        wnn.cls[y] = Dict{T, Int}[Dict{T, Int}() for i = 1:wnn.n]
     end
 
+    cls = wnn.cls[y]
+
     for i = 1:wnn.n
-        @inbounds k = sum(y[wnn.map][(i - 1) * wnn.d + j] << (j - 1) for j = 1:wnn.d)
-        @inbounds wnn.cls[x][i][k] = get(wnn.cls[x][i], k, 0) + 1
+        k = address(wnn, x, i)
+        @inbounds cls[i][k] = get(cls[i], k, 0) + 1
     end
 
     nothing
@@ -68,45 +77,60 @@ end
 
 Classifies input `y` returning some label `x`. If no training happened, `nothing` will be returned instead.
 """
-function classify(wnn::WNN, y::Vector{Bool}; bleach=0::Int, gamma=0.5::Float64)
+function classify(wnn::WNN, x::AbstractArray; bleach=0::Int, gamma=0.5::Float64)
 
     r₁ = r₂ = 0
-    x₁ = x₂ = nothing
+    y₁ = y₂ = nothing
 
-    for x₀ in keys(wnn.cls)
-        r₀ = rate(wnn, x₀, y)
+    for y₀ in keys(wnn.cls)
+        r₀ = rate(wnn, y₀, x)
         if r₀ >= r₁
             r₁, r₂ = r₀, r₁
-            x₁, x₂ = x₀, x₁
+            y₁, y₂ = y₀, y₁
         elseif r₀ > r₂
             r₂ = r₀
         end
     end
     
-    if bleach == 0
-        return x₁
+    return if bleach == 0
+        y₁
     else
         γ = (r₁ - r₂) / r₁
 
         if γ >= gamma
-            return x₁
+            y₁
         else
-            r₂ = rate(wnn, x₂, y; bleach=bleach)
-            r₁ = rate(wnn, x₁, y; bleach=bleach)
+            r₂ = rate(wnn, y₂, x; bleach=bleach)
+            r₁ = rate(wnn, y₁, x; bleach=bleach)
 
             if r₁ > r₂
-                return x₁
+                y₁
             else
-                return x₂
+                y₂
             end
         end
     end
 end
 
-function rate(wnn::WNN{S, T}, x::Union{S, Nothing}, y::Vector{Bool}; bleach=0::Int) where {S, T}
-    if !haskey(wnn.cls, x)
-        return 0.0
+function rate(wnn::WNN{S, T}, y::Union{S, Nothing}, x::AbstractArray; bleach=0::Int) where {S, T}
+    return if !haskey(wnn.cls, y)
+        0.0
     else
-        return @inbounds sum((get(wnn.cls[x][i], sum(y[wnn.map][(i - 1) * wnn.d + j] << (j - 1) for j = 1:wnn.d), 0.0) > bleach ? 1.0 : 0.0) for i = 1:wnn.n)
+        @inbounds sum(
+            get(wnn.cls[y][i], address(wnn, x, i), 0) > bleach ? 1.0 : 0.0
+            for i = 1:wnn.n
+        )
     end
+end
+
+function train!(wnn::WNN{S, T}, y::Vector{S}, x::Vector{AbstractArray}) where {S, T}
+    for (yᵢ, xᵢ) in zip(y, x)
+        train!(wnn, yᵢ, xᵢ)
+    end
+
+    nothing
+end
+
+function classify(wnn::WNN, x::Vector{AbstractArray})
+    [classify(wnn, xᵢ) for xᵢ in x]
 end
