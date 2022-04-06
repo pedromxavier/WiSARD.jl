@@ -29,11 +29,12 @@ test_x = Array{Bool}[test_x[:, :, i] .>= 0.25 for i = 1:10_000]
 
 train!(wnn, train_y, train_x)
 
-s = count(classify(wnn, test_x) .== test_y)
+s = count(classify(wnn, test_x; bleach=12) .== test_y)
 
 println("Accuracy: $(100. * s / 10_000)%")
 ```
 
+### Mental Images
 ```@example mnist
 using Images
 
@@ -57,6 +58,8 @@ RGB.([img[(i - 1) * 28 + j] for i = 1:28, j = 1:28])
 ```
 
 ## Fashion MNIST
+
+### Traning & Testing
 ```@example fashion-mnist
 using WiSARD
 using MLDatasets
@@ -79,11 +82,12 @@ test_x = Array{Bool}[test_x[:, :, i] .>= 0.25 for i = 1:10_000]
 
 train!(wnn, train_y, train_x)
 
-s = count(classify(wnn, test_x) .== test_y)
+s = count(classify(wnn, test_x; bleach=12) .== test_y)
 
 println("Accuracy: $(100. * s / 10_000)%")
 ```
 
+### Mental Images
 ```@example fashion-mnist
 using Images
 
