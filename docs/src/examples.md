@@ -29,7 +29,7 @@ test_x = Array{Bool}[test_x[:, :, i] .>= 0.25 for i = 1:10_000]
 
 train!(wnn, train_y, train_x)
 
-s = count(classify(wnn, test_x; bleach=12) .== test_y)
+s = count(classify(wnn, test_x; bleach=10) .== test_y)
 
 println("Accuracy: $(100. * s / 10_000)%")
 ```
@@ -38,23 +38,17 @@ println("Accuracy: $(100. * s / 10_000)%")
 ```@example mnist
 using Images
 
-images = WiSARD.images(wnn)
+images = WiSARD.images(RGB, wnn; w=28, h=28)
 
-img = images[0]
-
-RGB.([img[(i - 1) * 28 + j] for i = 1:28, j = 1:28])
+images[0]
 ```
 
 ```@example mnist
-img = images[1]
-
-RGB.([img[(i - 1) * 28 + j] for i = 1:28, j = 1:28])
+images[1]
 ```
 
 ```@example mnist
-img = images[2]
-
-RGB.([img[(i - 1) * 28 + j] for i = 1:28, j = 1:28])
+images[2]
 ```
 
 ## Fashion MNIST
@@ -82,7 +76,7 @@ test_x = Array{Bool}[test_x[:, :, i] .>= 0.25 for i = 1:10_000]
 
 train!(wnn, train_y, train_x)
 
-s = count(classify(wnn, test_x; bleach=12) .== test_y)
+s = count(classify(wnn, test_x; bleach=10) .== test_y)
 
 println("Accuracy: $(100. * s / 10_000)%")
 ```
@@ -91,21 +85,15 @@ println("Accuracy: $(100. * s / 10_000)%")
 ```@example fashion-mnist
 using Images
 
-images = WiSARD.images(wnn)
+images = WiSARD.images(RGB, wnn; w=28, h=28)
 
-img = images[0]
-
-RGB.([img[(i - 1) * 28 + j] for i = 1:28, j = 1:28])
+images[0]
 ```
 
 ```@example fashion-mnist
-img = images[1]
-
-RGB.([img[(i - 1) * 28 + j] for i = 1:28, j = 1:28])
+images[1]
 ```
 
 ```@example fashion-mnist
-img = images[2]
-
-RGB.([img[(i - 1) * 28 + j] for i = 1:28, j = 1:28])
+images[2]
 ```
