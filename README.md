@@ -17,7 +17,7 @@
 </div>
 
 ## Introduction
-WiSARD.jl is a Julia Package that implements a Weightless Neural Network (WNN) Model.
+WiSARD.jl is a Julia Package that implements the WiSARD Weightless Neural Network (WNN) Model.
 
 ## Getting Started
 
