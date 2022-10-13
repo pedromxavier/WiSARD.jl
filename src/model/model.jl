@@ -1,5 +1,12 @@
 export WNN, train!, classify
 
+struct WNNKEY{T<:Union{Unsigned,BigInt}}
+    i::Int
+    k::T
+
+    WNNKEY{T}(i::Int, k::T) where {T} = new{T}(i, k)
+end
+
 @doc raw"""
     WNN{S, T}(d::Int, n::Int; seed::Union{Int, Nothing}=nothing) where {S <: Any, T <: Union{Unsigned, BigInt}}
     WNN{T}(d::Int, n::Int; seed::Union{Int, Nothing}=nothing) where {T <: Union{Unsigned, BigInt}}
@@ -7,17 +14,21 @@ export WNN, train!, classify
 ## References:
  * [1] Carvalho, Danilo & Carneiro, Hugo & França, Felipe & Lima, Priscila. (2013). B-bleaching : Agile Overtraining Avoidance in the WiSARD Weightless Neural Classifier. 
 """
-struct WNN{S <: Any, T <: Union{Unsigned, BigInt}}
+struct WNN{S<:Any,T<:Union{Unsigned,BigInt}}
     d::Int
     n::Int
-    cls::Dict{S, Vector{Dict{T, Int}}}
+    cls::Dict{S,Dict{WNNKEY{T},Int}}
     map::Vector{Int}
 
-    function WNN{S, T}(d::Int, n::Int; seed::Union{Int, Nothing}=nothing) where {S <: Any, T <: Union{Unsigned, BigInt}}
+    function WNN{S,T}(
+        d::Int,
+        n::Int;
+        seed::Union{Int,Nothing} = nothing,
+    ) where {S<:Any,T<:Union{Unsigned,BigInt}}
         if n <= 0 || d <= 0
             error("Values for 'd' and 'n' must be positive")
         end
-    
+
         if T !== BigInt && d > (T.size * 8)
             error("'$T' is insufficient to guarantee 'd' addressing bits")
         end
@@ -25,28 +36,48 @@ struct WNN{S <: Any, T <: Union{Unsigned, BigInt}}
         if seed === nothing
             seed = trunc(Int, time())
         end
-    
+
         rng = Random.MersenneTwister(seed)
-    
-        new{S, T}(
-            d,
-            n,
-            Dict{S, Vector{Dict{T, Int}}}(),
-            Random.shuffle(rng, 1:n * d)
-        )
+
+        new{S,T}(d, n, Dict{S,Dict{WNNKEY{T},Int}}(), Random.shuffle(rng, 1:n*d))
     end
 
-    function WNN{T}(d::Int, n::Int; seed::Union{Int, Nothing}=nothing) where {T <: Union{Unsigned, BigInt}}
-        WNN{Symbol, T}(d, n; seed=seed)
+    function WNN{T}(
+        d::Int,
+        n::Int;
+        seed::Union{Int,Nothing} = nothing,
+    ) where {T<:Union{Unsigned,BigInt}}
+        WNN{Symbol,T}(d, n; seed = seed)
     end
 
 end
 
-Base.show(io::IO, wnn::WNN{S, T}) where {S <: Any, T <: BigInt}  = print(io, "WNN[∞ bits, $(wnn.d) × $(wnn.n)]")
-Base.show(io::IO, wnn::WNN{S, T}) where {S <: Any, T <: Unsigned} = print(io, "WNN[$(T.size * 8) bits, $(wnn.d) × $(wnn.n)]")
+Base.isempty(wnn::WNN) = all(isempty.(values(wnn.cls)))
 
-function address(wnn::WNN, x::AbstractArray, i::Int)
-    @inbounds sum(iszero(x[wnn.map[(i - 1) * wnn.d + j]]) ? 0 : 1 << (j - 1) for j = 1:wnn.d)
+# function Base.empty!(wnn::WNN)
+#     for cls in values(wnn.cls)
+#         empty!.(cls)
+#     end
+
+#     return wnn
+# end
+
+Base.show(io::IO, wnn::WNN{S,T}) where {S<:Any,T<:BigInt} =
+    print(io, "WNN[∞ bits, $(wnn.d) × $(wnn.n)]")
+Base.show(io::IO, wnn::WNN{S,T}) where {S<:Any,T<:Unsigned} =
+    print(io, "WNN[$(T.size * 8) bits, $(wnn.d) × $(wnn.n)]")
+
+Base.Broadcast.broadcastable(wnn::WNN) = Ref(wnn)
+
+function address(wnn::WNN{<:Any,T}, x::AbstractArray, i::Int) where {T}
+    s = zero(T)
+
+    for j = 1:wnn.d
+        k = @inbounds wnn.map[(i-1)*wnn.d+j]
+        s = s + @inbounds (x[k] > 0) | (1 << (j - 1))
+    end
+
+    return s
 end
 
 @doc raw"""
@@ -54,16 +85,16 @@ end
 
 Train model with a single pair (class `x`, sample `y`)
 """
-function train!(wnn::WNN{S, T}, y::S, x::AbstractArray) where {S, T}
+function train!(wnn::WNN{S,T}, x::AbstractArray, y::S) where {S,T}
     if !haskey(wnn.cls, y)
-        wnn.cls[y] = Dict{T, Int}[Dict{T, Int}() for i = 1:wnn.n]
+        wnn.cls[y] = Dict{WNNKEY{T},Int}()
     end
 
-    cls = wnn.cls[y]
+    c = wnn.cls[y]
 
     for i = 1:wnn.n
         k = address(wnn, x, i)
-        @inbounds cls[i][k] = get(cls[i], k, 0) + 1
+        @inbounds c[i, k] = get(c, (i, k), 0) + 1
     end
 
     nothing
@@ -74,7 +105,7 @@ end
 
 Classifies input `y` returning some label `x`. If no training happened, `nothing` will be returned instead.
 """
-function classify(wnn::WNN, x::AbstractArray; bleach=0::Int, gamma=0.5::Float64)
+function classify(wnn::WNN, x::AbstractArray; bleach = 0::Int, gamma = 0.5::Float64)
 
     r₁ = r₂ = 0
     y₁ = y₂ = nothing
@@ -88,46 +119,40 @@ function classify(wnn::WNN, x::AbstractArray; bleach=0::Int, gamma=0.5::Float64)
             r₂ = r₀
         end
     end
-    
-    return if bleach == 0
-        y₁
+
+    if iszero(bleach)
+        return y₁
     else
         γ = (r₁ - r₂) / r₁
 
         if γ >= gamma
-            y₁
+            return y₁
         else
-            r₂ = rate(wnn, y₂, x; bleach=bleach)
-            r₁ = rate(wnn, y₁, x; bleach=bleach)
+            r₁ = rate(wnn, y₁, x; bleach = bleach)
+            r₂ = rate(wnn, y₂, x; bleach = bleach)
 
-            if r₁ > r₂
-                y₁
-            else
-                y₂
-            end
+            return r₁ > r₂ ? y₁ : y₂
         end
     end
 end
 
-function rate(wnn::WNN{S, T}, y::Union{S, Nothing}, x::AbstractArray; bleach=0::Int) where {S, T}
+function rate(
+    wnn::WNN{S,T},
+    y::Union{S,Nothing},
+    x::AbstractArray;
+    bleach = 0::Int,
+) where {S,T}
     return if !haskey(wnn.cls, y)
         0.0
     else
-        @inbounds sum(
-            get(wnn.cls[y][i], address(wnn, x, i), 0) > bleach ? 1.0 : 0.0
-            for i = 1:wnn.n
-        )
+        c = wnn.cls[y]
+        s = 0.0
+
+        for i = 1:wnn.n
+            z = @inbounds get(c, (i, address(wnn, x, i)), 0)
+            s = z > bleach ? s + 1.0 : s
+        end
+
+        return s
     end
-end
-
-function train!(wnn::WNN{S, T}, y::Vector{S}, x::Vector{<:AbstractArray}) where {S, T}
-    for (yᵢ, xᵢ) in zip(y, x)
-        train!(wnn, yᵢ, xᵢ)
-    end
-
-    nothing
-end
-
-function classify(wnn::WNN, x::Vector{<:AbstractArray}; bleach::Int=0, gamma::Float64=0.5)
-    [classify(wnn, xᵢ; bleach=bleach, gamma=gamma) for xᵢ in x]
 end
