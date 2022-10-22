@@ -1,8 +1,3 @@
-using Pkg
-
-Pkg.add(path=@__DIR__)
-Pkg.instantiate()
-
 using WiSARD
 using PkgBenchmark
 
