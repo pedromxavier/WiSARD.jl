@@ -1,3 +1,7 @@
+import Pkg
+Pkg.add(path=joinpath(@__DIR__, ".."))
+Pkg.instantiate()
+
 using WiSARD
 using PkgBenchmark
 
