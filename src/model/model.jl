@@ -93,8 +93,8 @@ function train!(wnn::WNN{S,T}, x::AbstractArray, y::S) where {S,T}
     c = wnn.cls[y]
 
     for i = 1:wnn.n
-        k = address(wnn, x, i)
-        @inbounds c[i, k] = get(c, (i, k), 0) + 1
+        ω = WNNKEY{T}(i, address(wnn, x, i))
+        @inbounds c[ω] = get(c, ω, 0) + 1
     end
 
     nothing

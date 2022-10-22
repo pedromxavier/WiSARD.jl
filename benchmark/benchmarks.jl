@@ -1,5 +1,6 @@
 using BenchmarkTools
 using WiSARD
+using MLDatasets
 
 const SUITE = BenchmarkGroup()
 

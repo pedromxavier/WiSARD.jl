@@ -3,7 +3,7 @@ function mnist_benchmark!(SUITE::BenchmarkGroup)
 
     SUITE["mnist"] = BenchmarkGroup(["MNIST"])
 
-    mnist_trainset = MNIST(Int, :train)
+    mnist_trainset = MLDatasets.MNIST(Int, :train)
     mnist_train_x  = [mnist_trainset[i][:features] for i = 1:60_000]
     mnist_train_y  = [mnist_trainset[i][:targets] for i = 1:60_000]
 
@@ -13,7 +13,7 @@ function mnist_benchmark!(SUITE::BenchmarkGroup)
         $mnist_train_y,
     )
 
-    mnist_testset = MNIST(Int, :test)
+    mnist_testset = MLDatasets.MNIST(Int, :test)
     mnist_test_x  = [mnist_testset[i][:features] for i = 1:10_000]
     # mnist_test_y  = [mnist_testset[i][:targets] for i = 1:10_000]
 
