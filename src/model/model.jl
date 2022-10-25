@@ -139,8 +139,8 @@ end
 function rate(
     wnn::WNN{S,T},
     y::Union{S,Nothing},
-    x::AbstractArray;
-    bleach = 0::Int,
+    x::AbstractArray{<:Integer},
+    bleach::Integer = 0,
 ) where {S,T}
     return if !haskey(wnn.cls, y)
         0.0
