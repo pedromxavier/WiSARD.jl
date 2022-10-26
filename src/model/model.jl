@@ -160,12 +160,16 @@ function rate(
     end
 end
 
-function classhint!(wnn::WNN{S,T}, keys::S...) where {S,T}
-    for key in keys
+function classhint!(wnn::WNN{S,T}, classes::Vector{S}) where {S,T}
+    for key in classes
         if !haskey(wnn.cls, key)
-            wnn.cls = WNNCLS{T}()
+            wnn.cls[key] = WNNCLS{T}()
         end
     end
 
     return nothing
+end
+
+function classhint!(wnn::WNN{S,T}, classes::S...) where {S,T}
+    classhint!(wnn, collect(classes))
 end
