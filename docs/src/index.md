@@ -5,10 +5,13 @@ This package implements the WiSARD (*Wilkie, Stoneham and Aleksander Recognition
 ## Quick Start
 
 ### Installation
+
 ```julia
-pkg> add WiSARD
+julia> ]add WiSARD
 ```
+
 or
+
 ```julia
 julia> import Pkg
 
@@ -16,26 +19,29 @@ julia> Pkg.add("WiSARD")
 ```
 
 ### Example
+
 ```@example quick-start
 using WiSARD
 
 wnn = WNN{Symbol, UInt}(2, 2)
 
-train!(wnn, :x, [1 1 0 0])
-train!(wnn, :y, [0 0 1 1])
+train!(wnn, [1 1 0 0], :x)
+train!(wnn, [0 0 1 1], :y)
 
-classify(wnn, [1 1 0 0]) == :x
+println(classify(wnn, [1 1 0 0]) == :x)
+println(classify(wnn, [0 0 1 1]) == :y)
 ```
 
 ### Citing WiSARD.jl
+
 ```tex
 @software{xavier:2022,
   author       = {Pedro Maciel Xavier},
   title        = {WiSARD.jl},
-  month        = {apr},
+  month        = {10},
   year         = {2022},
   publisher    = {Zenodo},
-  version      = {v0.2.0},
+  version      = {v0.3.1},
   doi          = {10.5281/zenodo.6407358},
   url          = {https://doi.org/10.5281/zenodo.6407358}
 }

@@ -65,6 +65,10 @@ function Base.empty!(wnn::WNN)
     return wnn
 end
 
+function Base.keys(wnn::WNN)
+    return keys(wnn.cls)
+end
+
 Base.show(io::IO, wnn::WNN{S,T}) where {S<:Any,T<:BigInt} =
     print(io, "WNN[∞ bits, $(wnn.d) × $(wnn.n)]")
 Base.show(io::IO, wnn::WNN{S,T}) where {S<:Any,T<:Unsigned} =

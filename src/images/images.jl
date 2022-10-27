@@ -1,20 +1,18 @@
-function address(wnn::WNN{S,T}, k::T) where {S,T}
-    [j for j = 1:wnn.d if (k >> (j - 1)) % 2 == 1]
-end
+export images
+
+@inline deaddress(wnn::WNN{S,T}, k::T) where {S,T} = filter(j -> isodd(k >> (j - 1)), 1:wnn.d)
 
 function images(
-    N::Type{<:Any},
     wnn::WNN{S,T},
     y::S;
     w::Union{Int,Nothing} = nothing,
     h::Union{Int,Nothing} = nothing,
-) where {S,T<:WNNINT}
-    w, h = if isnothing(w) && isnothing(h)
-        1, wnn.n * wnn.d
+) where {S,T}
+    if isnothing(w) && isnothing(h)
+        w = 1
+        h = wnn.n * wnn.d
     elseif isnothing(w) || isnothing(h)
         error("Both width 'w' and height 'h' must be informed, or none of them")
-    else
-        w, h
     end
 
     cls = wnn.cls[y]
@@ -22,40 +20,34 @@ function images(
 
     M = 0
 
-    for i = 1:wnn.n
-        δ = wnn.n * (i - 1)
-        for (k, v) in cls[i]
-            for j in address(wnn, k)
-                M = max(M, img[wnn.map[δ+j]] += v)
-            end
+    for (w, v) in cls
+        δ = wnn.n * (w.i - 1)
+
+        for j in deaddress(wnn, w.k)
+            M = max(M, img[wnn.map[δ+j]] += v)
         end
     end
 
+    # `permutedims` is necessary since images are read
+    # in column-major (FORTRAN) order
+    img = permutedims(reshape(img, h, w))
+
     if iszero(M)
-        return reshape(img, h, w)
+        return img
     else
-        return reshape(img, h, w) / M
+        return img ./ M
     end
 end
 
 function images(
-    wnn::WNN{S,T},
-    y::S;
-    w::Union{Int,Nothing} = nothing,
-    h::Union{Int,Nothing} = nothing,
-) where {S,T}
-    images(Float64, wnn, y; w = w, h = h)
-end
-
-function images(
-    N::Type{<:Any},
+    ::Type{X},
     wnn::WNN{S,T};
     w::Union{Int,Nothing} = nothing,
     h::Union{Int,Nothing} = nothing,
-) where {S,T}
-    Dict{S,Array{N}}(y => images(N, wnn, y; w = w, h = h) for y in keys(wnn.cls))
+) where {S,T,X}
+    return Dict{S,Matrix{X}}(y => convert.(X, images(wnn, y; w = w, h = h)) for y in keys(wnn))
 end
 
 function images(wnn::WNN; w::Union{Int,Nothing} = nothing, h::Union{Int,Nothing} = nothing)
-    images(Float64, wnn; w = w, h = h)
+    return images(Float64, wnn; w = w, h = h)
 end

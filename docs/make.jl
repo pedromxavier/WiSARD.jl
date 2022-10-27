@@ -2,9 +2,7 @@ using Documenter
 using WiSARD
 
 # Set up to run docstrings with jldoctest
-DocMeta.setdocmeta!(
-    WiSARD, :DocTestSetup, :(using WiSARD); recursive=true
-)
+DocMeta.setdocmeta!(WiSARD, :DocTestSetup, :(using WiSARD); recursive=true)
 
 makedocs(;
     modules=[WiSARD],
@@ -25,7 +23,11 @@ makedocs(;
     workdir=@__DIR__
 )
 
-deploydocs(
-    repo=raw"github.com/pedromxavier/WiSARD.jl.git",
-    push_preview = true
-)
+if "--skip-deploy" ∉ ARGS
+    @info "Skipping deployment"
+     
+    deploydocs(
+        repo=raw"github.com/pedromxavier/WiSARD.jl.git",
+        push_preview = true
+    )
+end
