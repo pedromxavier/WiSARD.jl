@@ -50,3 +50,15 @@ end
 
 circular(x::S, n::Integer, l::Integer = n ÷ 2) where {S<:Real}                 = circular(Int, x, n, l)
 circular(x::AbstractVector{S}, n::Integer, l::Integer = n ÷ 2) where {S<:Real} = circular(Int, x, n, l)
+
+function circular(::Type{T}, n::Integer, l::Integer) where {T<:Integer}
+    return (x) -> circular(T, x, n, l)
+end
+
+circular(n::Integer, l::Integer) = circular(Int, n, l)
+
+function circular(f::Function, ::Type{T}, n::Integer, l::Integer) where {T<:Integer}
+    return (x) -> circular(T, f(x), n, l)
+end
+
+circular(f::Function, n::Integer, l::Integer) = circular(f, Int, n, l)

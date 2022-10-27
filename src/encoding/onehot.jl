@@ -48,3 +48,15 @@ end
 
 onehot(x::S, n::Integer) where {S<:Real}                 = onehot(Int, x, n)
 onehot(x::AbstractVector{S}, n::Integer) where {S<:Real} = onehot(Int, x, n)
+
+function onehot(::Type{T}, n::Integer) where {T<:Integer}
+    return (x) -> onehot(T, x, n)
+end
+
+onehot(n::Integer) = onehot(Int, n)
+
+function onehot(f::Function, ::Type{T}, n::Integer) where {T<:Integer}
+    return (x) -> onehot(T, f(x), n)
+end
+
+onehot(f::Function, n::Integer) = onehot(f, Int, n)

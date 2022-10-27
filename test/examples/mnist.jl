@@ -19,9 +19,11 @@ function test_mnist(α::Float64 = 0.9)
 
         train!.(wnn, x, y)
 
-        ȳ = classify(wnn, x̂)
-
-        @test WiSARD.accuracy(ŷ, ȳ) >= α
+        ȳ = classify.(wnn, x̂)
+        ᾱ = WiSARD.accuracy(ŷ, ȳ)
+        
+        @info "ᾱ = $ᾱ @ MNIST"
+        @test ᾱ >= α
     end
 
     return nothing

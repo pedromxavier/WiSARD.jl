@@ -20,8 +20,10 @@ function test_fmnist(α::Float64 = 0.75)
         train!.(wnn, x, y)
 
         ȳ = classify.(wnn, x̂)
-
-        @test WiSARD.accuracy(ŷ, ȳ) >= α
+        ᾱ = WiSARD.accuracy(ŷ, ȳ)
+        
+        @info "ᾱ = $ᾱ @ FashionMNIST"
+        @test ᾱ >= α
     end
 
     return nothing

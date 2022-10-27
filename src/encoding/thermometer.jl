@@ -48,3 +48,15 @@ end
 
 thermometer(x::S, n::Integer) where {S<:Real}                 = thermometer(Int, x, n)
 thermometer(x::AbstractVector{S}, n::Integer) where {S<:Real} = thermometer(Int, x, n)
+
+function thermometer(::Type{T}, n::Integer) where {T<:Integer}
+    return (x) -> thermometer(T, x, n)
+end
+
+thermometer(n::Integer) = thermometer(Int, n)
+
+function thermometer(f::Function, ::Type{T}, n::Integer) where {T<:Integer}
+    return (x) -> thermometer(T, f(x), n)
+end
+
+thermometer(f::Function, n::Integer) = thermometer(f, Int, n)
