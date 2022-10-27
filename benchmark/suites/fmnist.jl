@@ -3,7 +3,7 @@ function fmnist_benchmark!(SUITE::BenchmarkGroup)
 
     SUITE["fmnist"] = BenchmarkGroup(["fmnist"])
 
-    fmnist_trainset = MLDatasets.fmnist(Int, :train)
+    fmnist_trainset = MLDatasets.FashionMNIST(Int, :train)
     fmnist_train_x  = [fmnist_trainset[i][:features] for i = 1:60_000]
     fmnist_train_y  = [fmnist_trainset[i][:targets] for i = 1:60_000]
 
@@ -13,7 +13,7 @@ function fmnist_benchmark!(SUITE::BenchmarkGroup)
         $fmnist_train_y,
     )
 
-    fmnist_testset = MLDatasets.fmnist(Int, :test)
+    fmnist_testset = MLDatasets.FashionMNIST(Int, :test)
     fmnist_test_x  = [fmnist_testset[i][:features] for i = 1:10_000]
     # fmnist_test_y  = [fmnist_testset[i][:targets] for i = 1:10_000]
 

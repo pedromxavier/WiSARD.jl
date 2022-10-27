@@ -1,21 +1,62 @@
+export thermometer, thermometer!
+
 @doc raw"""
-    thermometer(x::Float64, n::Int)
-    thermometer(x::Vector{Float64}, n::Int)
-"""
-function thermometer(x::Float64, n::Int)
-    y = zeros(Bool, n)
-    k = trunc(Int, clamp(x, 0.0, 1.0) * n)
-    y[1:k] .= true
+    thermometer!(y::AbstractVector{T}, x::S) where {T<:Integer,S<:Real}
+    thermometer!(y::AbstractMatrix{T}, x::AbstractVector{S}) where {T<:Integer,S<:Real}
+""" function thermometer! end
+
+function thermometer!(y::AbstractVector{T}, x::S) where {T<:Integer,S<:Real}
+    n = length(y)
+    k = round(Int, n * clamp(x, zero(S), one(S)))
+
+    for i = eachindex(y)
+        y[i] = ifelse(i <= k, one(T), zero(T))
+    end
+
+    return nothing
+end
+
+function thermometer!(y::AbstractMatrix{T}, x::AbstractVector{S}) where {T<:Integer,S<:Real}
+    for i = eachindex(x)
+        thermometer!(view(y, i, :), x[i])
+    end
+
+    return nothing
+end
+
+@doc raw"""
+    thermometer([T,] x::S, n::Integer) where {T<:Integer,S<:Real}
+    thermometer([T,] x::AbstractVector{S}, n::Integer) where {T<:Integer,S<:Real}
+""" function thermometer end
+
+function thermometer(::Type{T}, x::S, n::Integer) where {T<:Integer,S<:Real}
+    y = Vector{T}(undef, n)
+
+    thermometer!(y, x)
+
     return y
 end
 
-function thermometer(x::Vector{Float64}, n::Int)
+function thermometer(::Type{T}, x::AbstractVector{S}, n::Integer) where {T<:Integer,S<:Real}
     m = length(x)
-    y = zeros(Bool, m * n)
-    for i = 1:m
-        j = (i - 1) * n + 1
-        k = trunc(Int, clamp(x[i], 0.0, 1.0) * n) - 1
-        y[j:j+k] .= true
-    end
+    y = Matrix{T}(undef, m, n)
+
+    thermometer!(y, x)
+
     return y
 end
+
+thermometer(x::S, n::Integer) where {S<:Real}                 = thermometer(Int, x, n)
+thermometer(x::AbstractVector{S}, n::Integer) where {S<:Real} = thermometer(Int, x, n)
+
+function thermometer(::Type{T}, n::Integer) where {T<:Integer}
+    return (x) -> thermometer(T, x, n)
+end
+
+thermometer(n::Integer) = thermometer(Int, n)
+
+function thermometer(f::Function, ::Type{T}, n::Integer) where {T<:Integer}
+    return (x) -> thermometer(T, f(x), n)
+end
+
+thermometer(f::Function, n::Integer) = thermometer(f, Int, n)

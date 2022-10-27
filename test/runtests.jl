@@ -1,6 +1,6 @@
 using Test
+using Random
 using WiSARD
-using MLDatasets
 
 # -*- Accept MLDatasets Downloads -*- #
 ENV["DATADEPS_ALWAYS_ACCEPT"] = true
