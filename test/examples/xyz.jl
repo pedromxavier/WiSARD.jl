@@ -1,4 +1,4 @@
-function test_xyz(α::Float64=1.0)
+function test_xyz(α::Float64=1.0, δ::Float64=0.0, k::Integer = 10)
     x = x̂ = [
         [
             1 0 1
@@ -23,15 +23,22 @@ function test_xyz(α::Float64=1.0)
     y = ŷ = [:x, :y, :z]
 
     @testset "XYZ ≥$α" begin
-        wnn = WNN{Symbol,UInt}(3, 4)
+        α⃗ = Vector{Float64}(undef, k)
 
-        train!.(wnn, x, y)
+        for j = 1:k
+            wnn = WNN{Symbol,UInt64}(3, 4; seed=j)
 
-        ȳ = classify.(wnn, x̂)
-        ᾱ = WiSARD.accuracy(ŷ, ȳ)
+            train!.(wnn, x, y)
 
-        @info "ᾱ = $ᾱ @ XYZ"
-        @test ᾱ >= α 
+            ȳ    = classify.(wnn, x̂)
+            α⃗[j] = WiSARD.accuracy(ŷ, ȳ)
+        end
+
+        ᾱ, δ̄ = mean(α⃗), std(α⃗)
+
+        @info @sprintf("ᾱ = %.2f ± %.2f @ XYZ", ᾱ, δ̄)
+        @test ᾱ >= α
+        @test δ̄ <= δ
     end
 
     return nothing

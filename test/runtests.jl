@@ -1,6 +1,8 @@
 using Test
+using Printf
 using Random
 using WiSARD
+using Statistics
 
 # -*- Accept MLDatasets Downloads -*- #
 ENV["DATADEPS_ALWAYS_ACCEPT"] = true

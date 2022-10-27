@@ -1,17 +1,16 @@
 using DataFrames
 using MLDatasets: Iris
 
-function test_iris(α::Float64 = 0.85, β::Float64 = 6/7)
-    dataset = Iris(; as_df=true)
+function test_iris(α::Float64 = 0.85, β::Float64 = 6 / 7, δ::Float64 = 1E-1, k::Integer = 10)
+    dataset = Iris(; as_df = true)
     N, M    = size(dataset.features)
     a       = [minimum(dataset.features[!, i]) for i = 1:M]
     b       = [maximum(dataset.features[!, i]) for i = 1:M]
     n       = trunc(Int, N * β)
     n̂       = N - n
-    i       = shuffle(1:N)
 
-    trainset = dataset[i[begin:n]]
-    testset  = dataset[i[n+1:end]]
+    trainset = dataset[n̂+1:N]
+    testset  = dataset[1:n̂]
 
     x = [collect(Float64, trainset[:features][i, :]) for i = 1:n]
     y = collect(String, trainset[:targets][!, 1])
@@ -27,17 +26,22 @@ function test_iris(α::Float64 = 0.85, β::Float64 = 6/7)
     ẑ = τ.(x̂)
 
     @testset "Iris ≥$α" begin
-        wnn = WNN{String,UInt64}(8, 4)
+        α⃗ = Vector{Float64}(undef, k)
 
-        # WiSARD.classhint!(wnn, collect(0:9))
+        for j = 1:k
+            wnn = WNN{String,UInt64}(8, 4; seed=j)
 
-        train!.(wnn, z, y)
+            train!.(wnn, z, y)
 
-        ȳ = classify.(wnn, ẑ)
-        ᾱ = WiSARD.accuracy(ŷ, ȳ)
-        
-        @info "ᾱ = $ᾱ @ Iris"
+            ȳ    = classify.(wnn, ẑ)
+            α⃗[j] = WiSARD.accuracy(ŷ, ȳ)
+        end
+
+        ᾱ, δ̄ = mean(α⃗), std(α⃗)
+
+        @info @sprintf("ᾱ = %.2f ± %.2f @ Iris", ᾱ, δ̄)
         @test ᾱ >= α
+        @test δ̄ <= δ
     end
 
     return nothing

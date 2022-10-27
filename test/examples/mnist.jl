@@ -1,6 +1,6 @@
 using MLDatasets: MNIST
 
-function test_mnist(α::Float64 = 0.9)
+function test_mnist(α::Float64 = 0.9, δ::Float64 = 1E-2, k::Integer = 5)
     trainset = MNIST(Int, :train)
     testset  = MNIST(Int, :test)
 
@@ -13,17 +13,24 @@ function test_mnist(α::Float64 = 0.9)
     ŷ = [testset[i][:targets] for i = 1:n̂]
 
     @testset "MNIST ≥$α" begin
-        wnn = WNN{Int,UInt64}(28, 28)
+        α⃗ = Vector{Float64}(undef, k)
 
-        WiSARD.classhint!(wnn, collect(0:9))
+        for j = 1:k
+            wnn = WNN{Int,UInt64}(28, 28)
 
-        train!.(wnn, x, y)
+            WiSARD.classhint!(wnn, collect(0:9))
 
-        ȳ = classify.(wnn, x̂)
-        ᾱ = WiSARD.accuracy(ŷ, ȳ)
-        
-        @info "ᾱ = $ᾱ @ MNIST"
+            train!.(wnn, x, y)
+
+            ȳ    = classify.(wnn, x̂)
+            α⃗[j] = WiSARD.accuracy(ŷ, ȳ)
+        end 
+
+        ᾱ, δ̄ = mean(α⃗), std(α⃗)
+
+        @info @sprintf("ᾱ = %.2f ± %.2f @ MNIST", ᾱ, δ̄)
         @test ᾱ >= α
+        @test δ̄ <= δ
     end
 
     return nothing
