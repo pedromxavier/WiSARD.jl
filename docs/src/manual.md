@@ -25,6 +25,7 @@ Here, the process is pretty much similar. The input is used to address the same 
 
 ```@docs
 WiSARD.WNN
+```
 
 ```@docs
 WiSARD.train!
