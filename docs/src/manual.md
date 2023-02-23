@@ -37,16 +37,15 @@ WiSARD.classify
 ## Encoding
 
 ```@docs
-WiSARD.onehot!
-WiSARD.onehot
+WiSARD.encode!
+WiSARD.encode
 ```
 
-```@docs
-WiSARD.thermometer!
-WiSARD.thermometer
-```
+### Encoding Methods
 
 ```@docs
-WiSARD.circular!
-WiSARD.circular
+WiSARD.OneHot
+WiSARD.Thermometer
+WiSARD.GaussianThermometer
+WiSARD.Circular
 ```

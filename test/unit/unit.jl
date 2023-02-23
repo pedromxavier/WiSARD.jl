@@ -1,11 +1,11 @@
 include("address.jl")
-include("encodings.jl")
+include("encoding.jl")
 include("broadcast.jl")
 
 function test_unit()
     @testset "Unit tests" verbose=true begin
         test_address()
-        test_encodings()     
+        test_encoding()     
         test_broadcast()
     end
 

@@ -20,7 +20,7 @@ function test_iris(α::Float64 = 0.85, β::Float64 = 6 / 7, δ::Float64 = 1E-1, 
 
     # Encode
     f = (x) -> ((x - a) ./ (b - a))
-    τ = thermometer(f, 8)
+    τ = WiSARD.encode(f, 8, WiSARD.Thermometer())
 
     z = τ.(x)
     ẑ = τ.(x̂)

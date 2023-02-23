@@ -1,20 +1,20 @@
 function test_broadcast()
-    wnn = WNN{Symbol,UInt}(3, 4)
+    wnn = WiSARD.WNN{Symbol,UInt}(3, 4)
 
     x = [
-        Bool[
+        [
             1 0 1
             0 1 0
             0 1 0
             1 0 1
         ],
-        Bool[
+        [
             1 0 1
             0 1 0
             0 1 0
             0 1 0
         ],
-        Bool[
+        [
             1 1 1
             0 1 1
             1 1 0

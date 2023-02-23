@@ -1,11 +1,9 @@
-export thermometer, thermometer!
-
 @doc raw"""
-    thermometer!(y::AbstractVector{T}, x::S) where {T<:Integer,S<:Real}
-    thermometer!(y::AbstractMatrix{T}, x::AbstractVector{S}) where {T<:Integer,S<:Real}
-""" function thermometer! end
+    Thermometer()
 
-function thermometer!(y::AbstractVector{T}, x::S) where {T<:Integer,S<:Real}
+""" struct Thermometer <: Encoding end
+
+function encode!(y::AbstractVector{T}, x::S, ::Thermometer) where {T<:Integer,S<:Real}
     n = length(y)
     k = round(Int, n * clamp(x, zero(S), one(S)))
 
@@ -16,47 +14,32 @@ function thermometer!(y::AbstractVector{T}, x::S) where {T<:Integer,S<:Real}
     return nothing
 end
 
-function thermometer!(y::AbstractMatrix{T}, x::AbstractVector{S}) where {T<:Integer,S<:Real}
-    for i = eachindex(x)
-        thermometer!(view(y, i, :), x[i])
+function thermometer end
+
+@doc raw"""
+""" struct GaussianThermometer{S<:Real} <: Encoding
+    μ::S
+    σ::S
+
+    function GaussianThermometer{S}(μ::S = zero(S), σ::S = one(S)) where {S}
+        return new{S}(μ, σ)
     end
+end
+
+function GaussianThermometer(μ::S, σ::S = one(S)) where {S}
+    return GaussianThermometer{S}(μ, σ)
+end
+
+function GaussianThermometer()
+    return GaussianThermometer(0.0)
+end
+
+function thermometer(method::GaussianThermometer{S}) where {S<:Real}
+    return (x) -> (1 + erf((x - method.μ) / (√2 * method.σ))) / 2
+end
+
+function encode!(y::AbstractVector{T}, x::S, method::GaussianThermometer{S}) where {T<:Integer,S<:Real}
+    encode!(thermometer(method), y, x, Thermometer())
 
     return nothing
 end
-
-@doc raw"""
-    thermometer([T,] x::S, n::Integer) where {T<:Integer,S<:Real}
-    thermometer([T,] x::AbstractVector{S}, n::Integer) where {T<:Integer,S<:Real}
-""" function thermometer end
-
-function thermometer(::Type{T}, x::S, n::Integer) where {T<:Integer,S<:Real}
-    y = Vector{T}(undef, n)
-
-    thermometer!(y, x)
-
-    return y
-end
-
-function thermometer(::Type{T}, x::AbstractVector{S}, n::Integer) where {T<:Integer,S<:Real}
-    m = length(x)
-    y = Matrix{T}(undef, m, n)
-
-    thermometer!(y, x)
-
-    return y
-end
-
-thermometer(x::S, n::Integer) where {S<:Real}                 = thermometer(Int, x, n)
-thermometer(x::AbstractVector{S}, n::Integer) where {S<:Real} = thermometer(Int, x, n)
-
-function thermometer(::Type{T}, n::Integer) where {T<:Integer}
-    return (x) -> thermometer(T, x, n)
-end
-
-thermometer(n::Integer) = thermometer(Int, n)
-
-function thermometer(f::Function, ::Type{T}, n::Integer) where {T<:Integer}
-    return (x) -> thermometer(T, f(x), n)
-end
-
-thermometer(f::Function, n::Integer) = thermometer(f, Int, n)
