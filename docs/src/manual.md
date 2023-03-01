@@ -29,10 +29,12 @@ WiSARD.WNN
 
 ```@docs
 WiSARD.train!
+WiSARD.classhint!
 ```
 
 ```@docs
 WiSARD.classify
+WISARD.accuracy
 ```
 
 ## Encoding
@@ -45,8 +47,20 @@ WiSARD.encode
 ### Encoding Methods
 
 ```@docs
+WiSARD.Encoding
 WiSARD.OneHot
 WiSARD.Thermometer
 WiSARD.GaussianThermometer
 WiSARD.Circular
+```
+
+### Extra
+```@docs
+WiSARD.address
+```
+
+### Mental Images
+```@docs
+WiSARD.deaddress
+WiSARD.images
 ```
