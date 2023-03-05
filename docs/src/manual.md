@@ -62,7 +62,7 @@ WiSARD.encode
 
 ### OneHot
 
-Let ``\mathrm{OH}^{k} : \mathbb{R} \to \mathbb{B}^{k}``.
+The ``\mathrm{OH}^{k} : \left[{0, 1}\right] \to \mathbb{B}^{k}`` encoding function activates the output vector entries, one at a time.
 
 ```@raw html
 <script>
@@ -83,7 +83,7 @@ function one_hot(x, n) {
 }
 
 function updateOneHot(x) {
-    let n = 7;
+    let n = 10;
     let X = x.toFixed(2);   
     let t = one_hot(x, n);
     let v = latex_vector(t);
@@ -117,7 +117,7 @@ WiSARD.OneHot
 
 ### Thermometer
 
-Let ``\mathrm{T}^{k} : \mathbb{R} \to \mathbb{B}^{k}``.
+Let ``\mathrm{T}^{k} : \left[{0, 1}\right] \to \mathbb{B}^{k}``.
 
 ```@raw html
 <script>
@@ -166,7 +166,7 @@ WiSARD.Thermometer
 
 ### Gaussian Thermometer
 
-Let ``\mathrm{GT}^{k} : \mathbb{R} \to \mathbb{B}^{k}``.
+Let ``\mathrm{GT}^{k}_{\mu,\sigma} : \mathbb{R} \to \mathbb{B}^{k}``.
 
 ```@raw html
 <script>
@@ -197,8 +197,8 @@ function updateGaussianThermometer(x) {
     style   = "display: inline-block; vertical-align: sub;"
     type    = "range"
     value   = "0.00"
-    min     = "-1.20"
-    max     = "1.20"
+    min     = "-1.00"
+    max     = "1.00"
     step    = "0.01"
     oninput = "updateGaussianThermometer(parseFloat(this.value));"
   >
