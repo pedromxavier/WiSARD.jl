@@ -34,27 +34,189 @@ WiSARD.classhint!
 
 ```@docs
 WiSARD.classify
-WISARD.accuracy
+WiSARD.accuracy
 ```
 
 ## Encoding
+
+```@raw html
+<script>
+function updateKaTeXContent(element, content) {
+  window.katex.render(content, element, {throwOnError: true});
+}
+
+function latex_vector(t) {
+    let n = t.length;
+    let c = "c".repeat(n);
+    let T = t.join(" & ");
+    
+    return `\\left[\\begin{array}{${c}} ${T} \\end{array}\\right]`
+}
+</script>
+```
 
 ```@docs
 WiSARD.encode!
 WiSARD.encode
 ```
 
-### Encoding Methods
+### OneHot
+
+Let ``\mathrm{OH}^{k} : \mathbb{R} \to \mathbb{B}^{k}``.
+
+```@raw html
+<script>
+function one_hot(x, n) {
+    if (n == 1) return [1];
+
+    let t = new Array(n);
+
+    t[0] = (x < 1 / n) ? 1 : 0;
+
+    for (let i = 1; i < n - 1; i++) {
+        t[i] = (i / n <= x && x < ((i + 1) / n)) ? 1 : 0;
+    }
+
+    t[n - 1] = ((n - 1) / n <= x) ? 1 : 0;
+
+    return t;
+}
+
+function updateOneHot(x) {
+    let n = 7;
+    let X = x.toFixed(2);   
+    let t = one_hot(x, n);
+    let v = latex_vector(t);
+
+    let content = `\\mathrm{OH}^{${n}}(${X}) = ${v}`;
+    let element = document.getElementById("onehot");
+
+    updateKaTeXContent(element, content);
+}
+</script>
+<p>
+  <span>$x = $</span>
+  <input
+    id      = "onehot-slider"
+    style   = "display: inline-block; vertical-align: sub;"
+    type    = "range"
+    value   = "0.50"
+    min     = "0.00"
+    max     = "1.00"
+    step    = "0.01"
+    oninput = "updateOneHot(parseFloat(this.value));"
+  >
+  <span>$\implies$</span>
+  <output id = "onehot"></output>
+</p>
+```
 
 ```@docs
-WiSARD.Encoding
 WiSARD.OneHot
+```
+
+### Thermometer
+
+Let ``\mathrm{T}^{k} : \mathbb{R} \to \mathbb{B}^{k}``.
+
+```@raw html
+<script>
+function thermometer(x, n) {
+    let t = new Array(n);
+
+    for (let i = 0; i < n; i++) {
+        t[i] = ((i + 1) / (n + 1) <= x) ? 1 : 0;
+    }
+
+    return t;
+}
+
+function updateThermometer(x) {
+    let n = 10;
+    let X = x.toFixed(2);
+    let t = thermometer(x, n);
+    let v = latex_vector(t);
+
+    let content = `\\mathrm{T}^{${n}}(${X}) = ${v}`
+    let element = document.getElementById("thermometer");
+
+    updateKaTeXContent(element, content);
+}
+</script>
+<p>
+  <span>$x = $</span>
+  <input
+    id      = "thermometer-slider"
+    style   = "display: inline-block; vertical-align: sub;"
+    type    = "range"
+    value   = "0.50"
+    min     = "0.00"
+    max     = "1.00"
+    step    = "0.01"
+    oninput = "updateThermometer(parseFloat(this.value));"
+  >
+  <span>$\implies$</span>
+  <output id="thermometer"></output>
+</p>
+```
+
+```@docs
 WiSARD.Thermometer
+```
+
+### Gaussian Thermometer
+
+Let ``\mathrm{GT}^{k} : \mathbb{R} \to \mathbb{B}^{k}``.
+
+```@raw html
+<script>
+function gaussian_thermometer(x, n, mu = 0.0, sigma = 1.0) {
+    y = (x - mu) / (Math.sqrt(2) * sigma);
+    z = 0.5 * (1 + window.mathjs.erf(y));
+
+    return thermometer(z, n);
+}
+
+function updateGaussianThermometer(x) {
+    let n = 10;
+    let X = x.toFixed(2);
+    let t = gaussian_thermometer(x, n);
+    let v = latex_vector(t);
+    let s = x < 0 ? "" : "+"
+
+    let content = `\\mathrm{T}^{${n}}(${s}${X}) = ${v}`;
+    let element = document.getElementById("gaussian-thermometer");
+
+    updateKaTeXContent(element, content);
+}
+</script>
+<p>
+  <span>$x = $</span>
+  <input
+    id      = "gaussian-thermometer-slider"
+    style   = "display: inline-block; vertical-align: sub;"
+    type    = "range"
+    value   = "0.00"
+    min     = "-1.20"
+    max     = "1.20"
+    step    = "0.01"
+    oninput = "updateGaussianThermometer(parseFloat(this.value));"
+  >
+  <span>$\implies$</span>
+  <output id = "gaussian-thermometer"></output>
+</p>
+```
+
+```@docs
 WiSARD.GaussianThermometer
+```
+
+### Circular
+```@docs
 WiSARD.Circular
 ```
 
-### Extra
+## Extra
 ```@docs
 WiSARD.address
 ```

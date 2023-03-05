@@ -1,15 +1,8 @@
 @doc raw"""
     Thermometer()
-
-This method is intended to be used...
-
-````@raw html
-<svg style="display: block; margin: 0 auto;" width="5em" heigth="5em">
-    <circle cx="2.5em" cy="2.5em" r="2em" stroke="black" stroke-width=".1em" fill="red" />
-</svg>
-````
-
-""" struct Thermometer <: Encoding end
+    
+"""
+struct Thermometer <: Encoding end
 
 function encode!(y::AbstractVector{T}, x::S, ::Thermometer) where {T<:Integer,S<:Real}
     n = length(y)
@@ -25,6 +18,8 @@ end
 function thermometer end
 
 @doc raw"""
+    GaussianThermometer{S}(μ::S, σ::S) where {S}
+
 """ struct GaussianThermometer{S<:Real} <: Encoding
     μ::S
     σ::S
