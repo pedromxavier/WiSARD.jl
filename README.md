@@ -14,6 +14,9 @@
     <a href="https://zenodo.org/badge/latestdoi/425513329">
         <img src="https://zenodo.org/badge/425513329.svg" alt="DOI">
     </a>
+    <a href="https://github.com/pedromxavier/flag-badges">
+        <img src="https://raw.githubusercontent.com/pedromxavier/flag-badges/main/badges/BR.svg" alt="made in BR">
+    </a>
 </div>
 
 ## Introduction
