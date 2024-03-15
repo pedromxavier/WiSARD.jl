@@ -1,17 +1,33 @@
 @doc raw"""
-""" function train! end
 
-@doc raw"""
-""" function classhint! end
+"""
+abstract type AbstractWNN{S,T} <: MLJMI.Probabilistic end
 
-@doc raw"""
-""" function classify end
+mutable struct WNN{S,T} <: AbstractWNN{S,T}
+    m::Int
+    n::Int
+    β::Union{Int,Nothing}
+end
 
-@doc raw"""
-""" function address end
+# keyword constructor
+function WNN(; m::Integer=32, n::Integer=32, β::Integer=3)
+	model = WNN(m, n, β)
 
-@doc raw"""
-""" function images end
+	message = MMI.clean!(model)
+    
+	isempty(message) || @warn message
 
-@doc raw"""
-""" function deaddress end
+	return model
+end
+
+function MLJMI.clean!(model::WNN)
+	message = ""
+
+	if model.lambda < 0
+		message = "Need lambda ≥ 0. Resetting lambda=0. "
+
+		model.lambda = 0
+	end
+	
+    return message
+end
