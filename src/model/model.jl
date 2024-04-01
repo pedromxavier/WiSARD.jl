@@ -29,7 +29,7 @@ struct WNN{S<:Any,T<:WNNINT}
             error("Values for 'd' and 'n' must be positive")
         end
 
-        if T !== BigInt && d > (T.size * 8)
+        if T !== BigInt && d > (sizeof(T) * 8)
             error("'$T' is insufficient to provide 'd' addressing bits")
         end
 
@@ -72,7 +72,7 @@ end
 Base.show(io::IO, wnn::WNN{S,T}) where {S<:Any,T<:BigInt} =
     print(io, "WNN[∞ bits, $(wnn.d) × $(wnn.n)]")
 Base.show(io::IO, wnn::WNN{S,T}) where {S<:Any,T<:Unsigned} =
-    print(io, "WNN[$(T.size * 8) bits, $(wnn.d) × $(wnn.n)]")
+    print(io, "WNN[$(sizeof(T) * 8) bits, $(wnn.d) × $(wnn.n)]")
 
 Base.Broadcast.broadcastable(wnn::WNN) = Ref(wnn)
 
